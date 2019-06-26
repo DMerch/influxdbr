@@ -4,7 +4,7 @@
 #' @inheritParams influx_query
 #' @param field_keys Specifies the fields to be selected.
 #' @param rp The name of the retention policy.
-#' @param measurement Sets the name of the measurement.
+#' @param measurement Character vector containing name(s) of the measurement(s).
 #' @param where Apply filter on tag key values.
 #' @param group_by The group_by clause in InfluxDB is used not only for
 #' grouping by given values, but also for grouping by given time buckets.
@@ -15,7 +15,7 @@
 #' @param return_xts logical. Sets the return type. If set to TRUE, a list of xts objects
 #' is returned, FALSE gives list of tibbles.
 #'
-#' @return A list of xts or tibbles.
+#' @return A list of xts or tibbles. Empty query results yield to NULL.
 #' @export
 #' @references \url{https://docs.influxdata.com/influxdb/}
 influx_select <- function(con,
@@ -40,6 +40,9 @@ influx_select <- function(con,
   if (!is.null(rp)) {
     measurement <- paste(base::dQuote(rp), base::dQuote(measurement), sep = ".")
   }
+
+  ### Select all data from more than one measurement
+  measurement <- paste(measurement, collapse = ", ")
   
   query <- paste("SELECT", field_keys, "FROM", measurement)
   

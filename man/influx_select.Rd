@@ -4,9 +4,10 @@
 \alias{influx_select}
 \title{influx select helper}
 \usage{
-influx_select(con, db, field_keys, rp = NULL, measurement, where = NULL,
-  group_by = NULL, limit = NULL, slimit = FALSE, offset = NULL,
-  order_desc = FALSE, return_xts = TRUE, simplifyList = FALSE)
+influx_select(con, db, field_keys, rp = NULL, measurement,
+  where = NULL, group_by = NULL, limit = NULL, slimit = FALSE,
+  offset = NULL, order_desc = FALSE, return_xts = TRUE,
+  simplifyList = FALSE)
 }
 \arguments{
 \item{con}{An \code{influx_connection} object (s. \code{\link{influx_connection}}).}
@@ -17,7 +18,7 @@ influx_select(con, db, field_keys, rp = NULL, measurement, where = NULL,
 
 \item{rp}{The name of the retention policy.}
 
-\item{measurement}{Sets the name of the measurement.}
+\item{measurement}{Character vector containing name(s) of the measurement(s).}
 
 \item{where}{Apply filter on tag key values.}
 
@@ -40,7 +41,7 @@ be flatten to directly get either a tibble or an xts object (instead of a list)
 (default is FALSE).}
 }
 \value{
-A list of xts or tibbles.
+A list of xts or tibbles. Empty query results yield to NULL.
 }
 \description{
 This function is a convenient wrapper for selecting data from a measurement

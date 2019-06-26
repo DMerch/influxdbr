@@ -31,7 +31,7 @@ install.packages("influxdbr")
 You can install the dev version from github with:
 ```{r gh-installation, eval = FALSE}
 # install.packages("remotes")
-remotes::install_github("dleutnant/influxdbr@dev")
+remotes::install_github("dleutnant/influxdbr")
 ```
 
 ## Example
@@ -85,7 +85,8 @@ The `influxdbr` package provides handy wrappers to manage a remote InfluxDB:
 create_database(con = con, db = "mydb")
 
 # list all databases
-show_databases(con = con)
+show_databases(con = con) %>% 
+  filter(name == "mydb") # show the db created above only
 ```
 ### Write data
 
@@ -134,7 +135,7 @@ influx_write(con = con,
              measurement = "sampledata")
 ```
 
-We can now check if the time series were succefully written:
+We can now check if the time series were successfully written:
 
 ```{r check_write_xts}
 # check if measurements were succefully written
@@ -207,9 +208,9 @@ str(result)
 ```
 
 ## Contributions
-This Git repository uses the [Git Flow](http://nvie.com/posts/a-successful-git-branching-model/) branching model (the [`git flow`](https://github.com/petervanderdoes/gitflow-avh) extension is useful for this). The [`dev`](https://github.com/dleutnant/influxdbr/tree/dev) branch contains the latest contributions and other code that will appear in the next release, and the [`master`](https://github.com/dleutnant/influxdbr) branch contains the code of the latest release, which is exactly what is currently on [CRAN](https://cran.r-project.org/package=influxdbr).
+This Git repository contains the latest contributions to the R package `influxdbr` and other code that will appear in the next [CRAN](https://cran.r-project.org/package=influxdbr) release.
 
-Contributing to this package is easy. Just send a [pull request](https://help.github.com/articles/using-pull-requests/). When you send your PR, make sure `dev` is the destination branch on the [influxdbr repository](https://github.com/dleutnant/influxdbr). Your PR should pass `R CMD check --as-cran`, which will also be checked by <a href="https://travis-ci.org/dleutnant/influxdbr">Travis CI</a> when the PR is submitted.
+Contributing to this package is easy. Just send a [pull request](https://help.github.com/articles/using-pull-requests/). Your PR should pass `R CMD check --as-cran`, which will also be checked by <a href="https://travis-ci.org/dleutnant/influxdbr">Travis CI</a> when the PR is submitted.
 
 ## Code of conduct
 Please note that this project is released with a [Contributor Code of Conduct](CONDUCT.md). By participating in this project you agree to abide by its terms.

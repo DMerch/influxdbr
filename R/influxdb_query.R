@@ -14,7 +14,7 @@
 #' be flatten to directly get either a tibble or an xts object (instead of a list)
 #' (default is FALSE).
 #'
-#' @return A list of tibble or xts objects.
+#' @return A list of tibble or xts objects. Empty query results yield to NULL.
 #' @rdname influx_query
 #' @export
 #' @seealso \code{\link[xts]{xts}}, \code{\link[influxdbr]{influx_connection}}
@@ -60,23 +60,37 @@ influx_query <- function(con,
   # Check for communication errors
   check_srv_comm(response)
   
-  # debug_data <<- rawToChar(response$content)
+  # debug_data <<- httr::content(response, "text", encoding="UTF-8")
   
   # initiate data conversion which result in a tibble with list-columns
   list_of_result <-
-    rawToChar(response$content) %>%  # convert to chars
+    httr::content(response, "text", encoding = "UTF-8") %>%  # convert to chars
     purrr::map(response_to_list) %>% # from json to list
     purrr::map(query_list_to_tibble, # from list to tibble
                timestamp_format = timestamp_format) %>% 
-    purrr::flatten(.)
+    purrr::flatten(.) %>% 
+    # set 'result_na' tibble to NULL
+    purrr::map_if(result_is_empty, ~ NULL)
   
   # xts object required?
-  if (return_xts)
+  if (return_xts) 
     list_of_result <- list_of_result %>%
-    purrr::map(tibble_to_xts)
-  
-  if (simplifyList && (length(list_of_result[[1]]) == 1)) 
-    list_of_result <- list_of_result[[1]][[1]]
+    purrr::map_if(result_is_not_null, tibble_to_xts)
+
+  # simplifyList?
+  if (simplifyList) {
+    .x <- list_of_result
+    if (length(.x) == 1) { 
+      .x <- .x[[1]]
+      if (rlang::is_bare_list(.x)) {
+        if (length(.x) == 1) {
+          list_of_result <- .x[[1]]
+        } 
+      } else {
+        list_of_result <- .x
+      }
+    }
+  } 
   
   # if not simplified, a list of results, either a list of tibbles or xts objects 
   # is ALWAYS returned! A wrapping function ALWAYS returns a tibble!

@@ -40,7 +40,6 @@ httr_POST <- function(con, query = NULL, body = NULL, endpoint) {
   return(response)
 }
 
-
 #' method to check the server communication results
 #' function is not exported
 #' @param x httr::POST response
@@ -70,7 +69,7 @@ check_srv_comm <- function(x) {
   #     The returned JSON offers further information.
   
   if (!x$status_code %in% c(200, 204)) {
-    response_data <- jsonlite::fromJSON(rawToChar(x$content))
+    response_data <- jsonlite::fromJSON(httr::content(x, "text", encoding = "UTF-8"))
     stop(response_data$error, call. = FALSE)
   }
   
